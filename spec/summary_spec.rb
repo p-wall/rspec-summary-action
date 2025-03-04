@@ -102,7 +102,7 @@ RSpec.describe "RSpec Summary Generator" do
     output = File.read(output_file.path)
     expect(output).to eq <<~HERE
       slack_message<<EOF
-      <https://github.com/p-wall/rspec-summary-action/actions/runs/123456|rspec-summary-action> saw test failures for <https://github.com/p-wall/rspec-summary-action/commit/abc123abc123abc123|abc123a> in run 1 attempt 2 by p-wall:
+      rspec-summary-action saw test failures for <https://github.com/p-wall/rspec-summary-action/commit/abc123abc123abc123|abc123a> in <https://github.com/p-wall/rspec-summary-action/actions/runs/123456|run 1 attempt 2> by p-wall:
       *RSpec Failures (2 total):*
       • <https://github.com/p-wall/rspec-summary-action/blob/abc123abc123abc123/spec/example_spec.rb#L15|spec/example_spec.rb:15>
       ```RSpec::Expectations::ExpectationNotMetError

@@ -113,7 +113,7 @@ end
 File.write(ENV["GITHUB_STEP_SUMMARY"], summary, mode: "a+")
 
 if total_failures > 0 || broken_files.any?
-  slack_message = "<#{run_url}|#{repo}> saw test failures for <#{commit_url}|#{ENV["GITHUB_SHA"][0..6]}> in #{run_and_attempt} by #{ENV["GITHUB_ACTOR"]}:\n"
+  slack_message = "#{repo} saw test failures for <#{commit_url}|#{ENV["GITHUB_SHA"][0..6]}> in <#{run_url}|#{run_and_attempt}> by #{ENV["GITHUB_ACTOR"]}:\n"
   slack_message += "*RSpec Failures (#{total_failures} total):*\n"
   broken_files.each { |file| slack_message += "• Broken file: #{file}\n" }
 
