@@ -83,6 +83,8 @@ RSpec.describe "RSpec Summary Generator" do
     allow(ENV).to receive(:[]).with("GITHUB_SHA").and_return("abc123abc123abc123")
     allow(ENV).to receive(:[]).with("GITHUB_RUN_ID").and_return("123456")
     allow(ENV).to receive(:[]).with("GITHUB_ACTOR").and_return("p-wall")
+    allow(ENV).to receive(:[]).with("GITHUB_RUN_NUMBER").and_return("1")
+    allow(ENV).to receive(:[]).with("GITHUB_RUN_ATTEMPT").and_return("2")
     load "summary.rb"
   end
 
@@ -100,7 +102,7 @@ RSpec.describe "RSpec Summary Generator" do
     output = File.read(output_file.path)
     expect(output).to eq <<~HERE
       slack_message<<EOF
-      <https://github.com/p-wall/rspec-summary-action/actions/runs/123456|GitHub Actions> saw test failures for <https://github.com/p-wall/rspec-summary-action/commit/abc123abc123abc123|abc123a> by p-wall:
+      <https://github.com/p-wall/rspec-summary-action/actions/runs/123456|rspec-summary-action> saw test failures for <https://github.com/p-wall/rspec-summary-action/commit/abc123abc123abc123|abc123a> in run 1 attempt 2 by p-wall:
       *RSpec Failures (2 total):*
       • <https://github.com/p-wall/rspec-summary-action/blob/abc123abc123abc123/spec/example_spec.rb#L15|spec/example_spec.rb:15>
       ```RSpec::Expectations::ExpectationNotMetError

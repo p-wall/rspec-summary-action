@@ -7,6 +7,8 @@ base_url = ENV["GITHUB_SERVER_URL"] + "/" + ENV["GITHUB_REPOSITORY"]
 blob_url = base_url + "/blob/" + ENV["GITHUB_SHA"]
 commit_url = base_url + "/commit/" + ENV["GITHUB_SHA"]
 run_url = base_url + "/actions/runs/" + ENV["GITHUB_RUN_ID"]
+_owner, repo = ENV["GITHUB_REPOSITORY"].split("/")
+run_and_attempt = ENV["GITHUB_RUN_ATTEMPT"].to_i > 1 ? "run #{ENV["GITHUB_RUN_NUMBER"]} attempt #{ENV["GITHUB_RUN_ATTEMPT"]}" : "run #{ENV["GITHUB_RUN_NUMBER"]}"
 
 summary = "### RSpec Summary\n\n"
 matching_files = Dir.glob(pattern)
@@ -111,7 +113,7 @@ end
 File.write(ENV["GITHUB_STEP_SUMMARY"], summary, mode: "a+")
 
 if total_failures > 0 || broken_files.any?
-  slack_message = "<#{run_url}|GitHub Actions> saw test failures for <#{commit_url}|#{ENV["GITHUB_SHA"][0..6]}> by #{ENV["GITHUB_ACTOR"]}:\n"
+  slack_message = "<#{run_url}|#{repo}> saw test failures for <#{commit_url}|#{ENV["GITHUB_SHA"][0..6]}> in #{run_and_attempt} by #{ENV["GITHUB_ACTOR"]}:\n"
   slack_message += "*RSpec Failures (#{total_failures} total):*\n"
   broken_files.each { |file| slack_message += "• Broken file: #{file}\n" }
 
