@@ -2,6 +2,8 @@
 
 require "json"
 
+SLACK_CHARACTER_LIMIT = 40_000
+
 pattern = ENV["PATTERN"] || "*.json"
 base_url = ENV["GITHUB_SERVER_URL"] + "/" + ENV["GITHUB_REPOSITORY"]
 blob_url = base_url + "/blob/" + ENV["GITHUB_SHA"]
@@ -117,7 +119,7 @@ if total_failures > 0 || broken_files.any?
   slack_message += "*RSpec Failures (#{total_failures} total):*\n"
   broken_files.each { |file| slack_message += "• Broken file: #{file}\n" }
 
-  failed_examples.first(5).each do |example, seed|
+  failed_examples.each do |example, seed|
     file_path = example["file_path"].delete_prefix("./")
     line_number = example["line_number"]
     example_url = "#{blob_url}/#{file_path}#L#{line_number}"
@@ -125,9 +127,14 @@ if total_failures > 0 || broken_files.any?
     message = example.dig("exception", "message") || ""
     message = message.gsub(/\e\[[0-9;]*m/, "").gsub("`", "").strip
 
-    slack_message += "• <#{example_url}|#{file_path}:#{line_number}>"
-    slack_message += " --seed #{seed}" unless all_same_seed
-    slack_message += "\n```#{exception_class}\n#{message}```\n"
+    next_snippet = "• <#{example_url}|#{file_path}:#{line_number}>"
+    next_snippet += " --seed #{seed}" unless all_same_seed
+    next_snippet += "\n```#{exception_class}\n#{message}```\n"
+
+    # Skip this one if it would push us over the limit
+    next if slack_message.size + next_snippet.size > SLACK_CHARACTER_LIMIT
+
+    slack_message += next_snippet
   end
 
   File.open(ENV["GITHUB_OUTPUT"], "a+") do |file|
